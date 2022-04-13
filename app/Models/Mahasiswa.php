@@ -8,20 +8,26 @@ use Illuminate\Database\Eloquent\Model; //Model Eloquent
 
 class Mahasiswa extends Model //Definisi Model
 {
- protected $table='mahasiswa'; // Eloquent akan membuat model mahasiswa menyimpan record di tabel mahasiswa
- protected $primaryKey = 'id_mahasiswa'; // Memanggil isi DB Dengan primarykey
- /**
- * The attributes that are mass assignable.
- *
- * @var array
- */
- protected $fillable = [
-     'Nim',
-     'Nama',
-     'Tanggal_Lahir',
-     'Jenis_Kelamin',
-     'Alamat',
-     'Email',
-     'Kelas',
-     'Jurusan'];
+    protected $table='mahasiswa'; // Eloquent akan membuat model mahasiswa menyimpan record di tabel mahasiswa
+    protected $primaryKey = 'nim'; // Memanggil isi DB Dengan primarykey
+    /**
+    * The attributes that are mass assignable.
+    *
+    * @var array
+    */
+    protected $fillable = [
+        'Nim',
+        'Nama',
+        'Tanggal_Lahir',
+        'Jenis_Kelamin',
+        'Alamat',
+        'Email',
+        'Kelas_id',
+        'Jurusan'];
+
+        public function kelas()
+        {
+            return $this->belongsTo(Kelas::class);
+        }
+   
 }
