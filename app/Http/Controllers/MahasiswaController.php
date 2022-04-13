@@ -4,11 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Mahasiswa;
 use App\Models\Kelas;
+use App\Models\Mahasiswa_MataKuliah;
+use App\Models\Matakuliah;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class MahasiswaController extends Controller
 {
+    public function nilai($id)
+    {
+        $daftar = Mahasiswa_MataKuliah::with("matakuliah")->where("mahasiswa_id", $id)->get();
+        $daftar->mahasiswa = Mahasiswa::with('kelas')->where('id_mahasiswa', $id)->first();
+        return view('mahasiswa.detailNilai', compact('daftar'));
+    }
     /**
      * Display a listing of the resource.
      *
