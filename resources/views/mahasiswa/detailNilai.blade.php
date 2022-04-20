@@ -9,6 +9,7 @@
         <div class="d-flex justify-content-center my-5">
             <h1 class="text-center">KARTU HASIL STUDI (KHS)</h1>
         </div>
+        <a  href="/mahasiswa/nilai/{{ $daftar->mahasiswa->nim }}/pdf" class="btn btn-success" style="float: right;">Cetak KHS</a>
         <div class="row mb-2">
             <ul class="" style="list-style-type: none;">
                 <!-- Mengambil data yang di dalam array -->

@@ -7,7 +7,9 @@ use App\Models\Kelas;
 use App\Models\Mahasiswa_MataKuliah;
 use App\Models\Matakuliah;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use PDF;
 
 class MahasiswaController extends Controller
 {
@@ -74,7 +76,12 @@ class MahasiswaController extends Controller
             'Email' => 'required',
             'Kelas' => 'required',
             'Jurusan' => 'required',
+            'Foto' => 'required',
         ]);
+
+        if($request->file('Foto')){
+            $image_name = $request->file('Foto')->store('images', 'public');
+        }
 
         $mahasiswa = new Mahasiswa;
         $mahasiswa->nim = $request->get('Nim');
@@ -85,6 +92,7 @@ class MahasiswaController extends Controller
         $mahasiswa->email = $request->get('Email');
         $mahasiswa->jurusan = $request->get('Jurusan');
         // $mahasiswa->save();
+        $mahasiswa->foto = $image_name;
 
         $kelas = new Kelas;
         $kelas->id = $request->get('Kelas');
@@ -156,6 +164,14 @@ class MahasiswaController extends Controller
             $mahasiswa->alamat = $request->get('Alamat');
             $mahasiswa->email = $request->get('Email');
             $mahasiswa->jurusan = $request->get('Jurusan');
+            
+            if($mahasiswa->foto && file_exists(storage_path('app/public/'. $mahasiswa->foto))) {
+                Storage::delete('public/' . $mahasiswa->foto);
+            }
+
+            $image_name = $request->file('Foto')->store('images','public');
+            $mahasiswa->foto = $image_name;
+
             $mahasiswa->save();
     
             $kelas = new Kelas;
@@ -182,5 +198,18 @@ class MahasiswaController extends Controller
         Mahasiswa::where('nim', $nim)->delete();
         return redirect()->route('mahasiswa.index')
         -> with('success', 'Mahasiswa Berhasil Dihapus');
- }
+    }
+
+    public function cetak_pdf($nim)
+    {
+        $mhs = Mahasiswa::where('nim',$nim)->first();
+        $nilai = Mahasiswa_MataKuliah::where('mahasiswa_id', $mhs->id_mahasiswa)
+                                        ->with('matakuliah')
+                                        ->with('mahasiswa')
+                                        ->get();
+        $nilai->mahasiswa = Mahasiswa::with('kelas')->where('nim', $nim)->first();
+        $pdf = PDF::loadview('mahasiswa.khs_pdf', ['nilai' =>$nilai]);
+        return $pdf->stream();
+    }
+
     }
